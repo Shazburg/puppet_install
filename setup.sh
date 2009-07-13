@@ -7,7 +7,7 @@ gemList="facter puppet"
 
 echo "Installing ruby packages using apt-get... "
 apt-get -qq update
-apt-get -qqq install $packageList
+apt-get -qqq install $packageList &> /dev/null
 if [ $? -ne 0 ] ; then
 	echo "Something broke. I quit."
 	exit 1
@@ -58,6 +58,7 @@ file { "/etc/sudoers":
 }
 EOF
 	) > /etc/puppet/manifests/site.pp
+	chown -R puppet:puppet /etc/puppet
 	echo "done"
 fi
 
