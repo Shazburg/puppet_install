@@ -2,7 +2,7 @@
 # setup.sh - Setup Puppet and Facter on a fresh install
 
 packageList="ruby ruby-dev libruby libopenssl-ruby irb rdoc ri"
-gemList="puppet facter"
+gemList="facter puppet"
 
 
 echo "Installing ruby packages using apt-get... "
