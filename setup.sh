@@ -1,34 +1,51 @@
 #!/usr/bin/env bash
 # setup.sh - Setup Puppet and Facter on a fresh install
 
-rubyPackages="ruby ruby-dev irb rdoc ri"
-puppetPackages="puppet"
-facterPackages="facter"
+packageList="ruby ruby-dev libruby libopenssl-ruby irb rdoc ri"
+gemList="puppet facter"
 
-testPackages ()
-{
-	filenames="$@"
-	for filename in $filenames
-	do
-		echo "Testing $filename"
-		if which $filename &> /dev/null ; then
-			echo "$filename is already installed. It's proper setup is your problem."
-		else
-			echo "$filename is not installed. I will install it."
-			echo $filename >> .must_install
-		fi
-	done
-}
+echo "Installing ruby packages using apt-get... "
+apt-get update &> /dev/null
+apt-get install $packageList &> /dev/null
+if [ $? -eq 1 ] ; then
+	echo "Something broke. I quit."
+	exit 1
+else
+	echo "done"
+fi
 
-cleanup ()
-{
-	rm -f .must_install
-}
+mkdir -p $HOME/tmp/puppet
+cd $HOME/tmp/puppet
 
-setup ()
-{
-	testPackages ruby puppet facter
-	cleanup
-}
+echo "Downloading current RubyGems... "
+curl -O http://rubyforge.org/frs/download.php/57643/rubygems-1.3.4.tgz &> /dev/null
+if [ $? -eq 1 ] ; then
+	echo "Something broke. I quit."
+	exit 1
+else
+	echo "done"
+fi
 
-setup
+echo "Installing RubyGems... "
+tar zxf rubygems-1.3.4.tgz &> /dev/null
+cd rubygems-1.3.4
+ruby setup.rb
+if [ $? -eq 1 ] ; then
+	echo "Something broke. I quit."
+	exit 1
+else
+	echo "done"
+fi
+
+echo "Installing Puppet... "
+gem install $gemList
+if [ $? -eq 1 ] ; then
+	echo "Something broke. I quit."
+	exit 1
+else
+	echo "done"
+fi
+
+echo "Puppet successfully installed"
+
+exit 0
